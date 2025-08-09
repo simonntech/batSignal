@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View, Image, TouchableOpacity, Text, TextInput } from 'react-native';
+import { StyleSheet, View, Image, TouchableOpacity, Text, TextInput, Alert } from 'react-native';
 import { Video, ResizeMode } from 'expo-av';
 import signal from './assets/batLogo.png';
 import bgVideo from './assets/animatedBg.mp4';
@@ -7,6 +7,9 @@ import { useState } from 'react';
 
 export default function App() {
 
+  const [name, setName] = useState('')
+  const [local, setLocal] = useState('')
+  const [notes, setNotes] = useState('')
   const [pressed, setPressed] = useState(false)
 
   function handlePressedBtn() {
@@ -23,7 +26,7 @@ export default function App() {
         shouldPlay
         isMuted
       />
-      <View style={[styles.containerTop, {display: pressed? 'none' : 'flex'}]}>
+      <View style={[styles.containerTop, { display: pressed ? 'none' : 'flex' }]}>
         <Image
           source={signal}
           style={styles.imageLogo}
@@ -32,7 +35,7 @@ export default function App() {
 
       <TouchableOpacity
         onPress={handlePressedBtn}>
-        <Text style={[styles.btnText, {display: pressed? 'none' : 'flex'}]}>
+        <Text style={[styles.btnText, { display: pressed ? 'none' : 'flex' }]}>
           Ativar Bat-Sinal
         </Text>
       </TouchableOpacity>
@@ -43,21 +46,34 @@ export default function App() {
           style={styles.inputStyle}
           placeholder='Nome Completo'
           placeholderTextColor={'#c0c0c0ff'}
+          onChange={(text) => setName(text.nativeEvent.text)}
+          value={name}
         />
         <TextInput
           style={styles.inputStyle}
           placeholder='Localização atual'
           placeholderTextColor={'#c0c0c0ff'}
+          onChange={(text) => setLocal(text.nativeEvent.text)}
+          value={local}
         />
         <Text style={styles.formFont}>Mais informações</Text>
         <TextInput
-          style={[styles.inputStyle, {height: 200}]}
+          style={[styles.inputStyle, { height: 200 }]}
           placeholder='Observações gerais...'
           placeholderTextColor={'#c0c0c0ff'}
+          onChange={(text) => setNotes(text.nativeEvent.text)}
+          value={notes}
         />
         <TouchableOpacity
           style={styles.btnSend}
-          onPress={handlePressedBtn}>
+          onPress={() => {
+            if(name !== '' && local !== '' && notes !=='') {
+              Alert.alert('Aviso recebido!', `Sr(a) ${name}, o socorro na Rua ${local}, sobre o ocorrido: ${notes} está à caminho!`);
+              handlePressedBtn()
+            } else {
+              Alert.alert('Mais informações...', 'Por favor, preencha todas as informações')
+            }
+          }}>
           <Image
             source={signal}
             style={styles.smallLogo}
@@ -114,8 +130,9 @@ const styles = StyleSheet.create({
     borderColor: 'white',
     borderWidth: 1,
     borderRadius: 8,
-    padding: 4,
-    marginVertical: 10
+    padding: 12,
+    marginVertical: 10,
+    color: 'white'
   },
   btnSend: {
     alignItems: 'center',
